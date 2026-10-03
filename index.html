@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vaina Mía - Boutique & Accesorios | Catálogo Oficial</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Estilos personalizados para animaciones suaves */
+    .fade-in {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .badge-pulse {
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen pb-20 font-sans">
+
+  <!-- COMPONENTE TOAST DE NOTIFICACIONES ELEGANTES (Reemplaza las alertas feas del navegador) -->
+  <div id="toast-notificacion" class="fixed top-5 left-1/2 -translate-x-1/2 z-[100] hidden transition-all duration-300 max-w-sm w-11/12 pointer-events-none">
+    <div id="toast-caja" class="bg-gray-900/95 text-white px-4 py-3.5 rounded-2xl shadow-2xl backdrop-blur-md flex items-center gap-3 border border-emerald-500/50 fade-in">
+      <span id="toast-icono" class="text-xl">✅</span>
+      <div class="flex-1 text-xs font-bold tracking-wide" id="toast-mensaje">Notificación</div>
+    </div>
+  </div>
+
+  <!-- MODAL DE SEGURIDAD PIN DE ADMINISTRADOR (Contraseña Oculta con Puntos) -->
+  <div id="modal-pin" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[90] hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-xs rounded-2xl p-6 shadow-2xl text-center fade-in border border-gray-100">
+      <div class="w-12 h-12 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center mx-auto mb-3 shadow-inner">
+        <i class="fa-solid fa-gear text-xl text-pink-600"></i>
+      </div>
+      <h3 class="text-base font-black text-gray-900 mb-1">Acceso Administrador</h3>
+      <p class="text-xs text-gray-500 mb-4">Ingresa tu código PIN de seguridad</p>
+      
+      <!-- Input seguro de contraseña tipo password -->
+      <form onsubmit="verificarPinAdmin(event)">
+        <input type="password" id="input-pin-admin" placeholder="••••" maxlength="12" autofocus
+          class="w-full text-center tracking-widest text-2xl font-bold py-2.5 px-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:outline-none mb-3 bg-gray-50">
+        
+        <p id="error-pin" class="text-[11px] text-red-600 font-bold mb-3 hidden">
+          ⚠️ PIN incorrecto. Inténtalo de nuevo.
+        </p>
+
+        <div class="flex gap-2">
+          <button type="button" onclick="cerrarPinModal()" class="flex-1 py-2.5 text-xs font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition">
+            Cancelar
+          </button>
+          <button type="submit" id="btn-submit-pin" class="flex-1 py-2.5 text-xs font-extrabold text-white bg-pink-600 hover:bg-pink-700 rounded-xl transition shadow flex items-center justify-center gap-1.5">
+            <span id="btn-pin-text">Ingresar</span>
+            <span id="btn-pin-spinner" class="hidden"><i class="fa-solid fa-circle-notch fa-spin text-xs"></i></span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Encabezado / Banner Superior de Vaina Mía (Vibrante & Llamativo para Redes Sociales) -->
+  <header class="bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 text-white shadow-lg sticky top-0 z-30">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <!-- Logo / Emblema Vaina Mía -->
+        <div class="relative shrink-0">
+          <img src="https://i.imgur.com/XDz195U.jpeg" alt="Vaina Mía" 
+            class="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-md">
+          <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-400 border-2 border-white rounded-full"></span>
+        </div>
+        <div>
+          <h1 class="font-extrabold text-lg sm:text-xl leading-tight tracking-wide" id="store-name">Vaina Mía</h1>
+          <p class="text-xs text-pink-100 flex items-center gap-1.5 font-medium">
+            <span class="w-2 h-2 rounded-full bg-green-400 animate-ping"></span>
+            Boutique & Accesorios • Promociones y Kits
+          </p>
+        </div>
+      </div>
+
+      <!-- Botón de Administrador con Rueda Dentada -->
+      <button onclick="abrirPinModal()" class="bg-white/20 hover:bg-white/30 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 backdrop-blur-sm transition shadow-sm border border-white/20" title="Panel de Administración">
+        <i class="fa-solid fa-gear text-sm"></i>
+        <span>Admin</span>
+      </button>
+    </div>
+
+    <!-- Barra de beneficios rápidos -->
+    <div class="bg-black/25 text-xs py-2 px-4 text-center text-yellow-200 font-semibold tracking-wide border-t border-white/10">
+      🔥 ¡Lleva en Kit o Combo y ahorra más dinero! Envío seguro a todo el país
+    </div>
+  </header>
+
+  <!-- Contenedor general centrado -->
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+
+    <!-- Filtro de Categorías -->
+    <div class="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h2 class="text-xl font-black text-gray-900">Catálogo de Productos</h2>
+        <p class="text-xs text-gray-500">Selecciona tu producto, elige tu talla y aprovecha los descuentos en kit</p>
+      </div>
+
+      <div class="flex space-x-2 bg-gray-200/90 p-1.5 rounded-2xl text-sm font-semibold max-w-sm">
+        <button onclick="filtrarCategoria('todos')" id="btn-cat-todos" class="flex-1 py-2 px-4 text-center rounded-xl bg-white shadow-sm font-bold text-gray-900 transition">
+          Todos
+        </button>
+        <button onclick="filtrarCategoria('Ropa')" id="btn-cat-Ropa" class="flex-1 py-2 px-4 text-center rounded-xl text-gray-600 hover:text-gray-900 transition">
+          👗 Ropa
+        </button>
+        <button onclick="filtrarCategoria('Accesorios')" id="btn-cat-Accesorios" class="flex-1 py-2 px-4 text-center rounded-xl text-gray-600 hover:text-gray-900 transition">
+          👜 Accesorios
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenedor Principal de Productos (Cuadrícula responsiva) -->
+    <main class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="productos-container">
+      <!-- Se inyectan dinámicamente con JavaScript -->
+    </main>
+
+  </div>
+
+  <!-- Footer Oficial Vaina Mía -->
+  <footer class="mt-16 bg-white text-gray-600 border-t border-gray-200 py-8">
+    <div class="max-w-5xl mx-auto px-4 text-center">
+      <img src="https://i.imgur.com/XDz195U.jpeg" alt="Vaina Mía" 
+        class="w-12 h-12 rounded-full object-cover mx-auto mb-2 border-2 border-pink-500 shadow-sm">
+      <h3 class="font-bold text-gray-900 text-base">Vaina Mía</h3>
+      <p class="text-xs text-pink-600 font-semibold mt-0.5">Boutique & Accesorios</p>
+      <div class="mt-4 flex flex-wrap justify-center gap-3 text-xs text-gray-500">
+        <span class="flex items-center gap-1.5"><i class="fa-solid fa-truck-fast text-pink-500"></i> Envíos a todo el país</span>
+        <span class="flex items-center gap-1.5"><i class="fa-brands fa-whatsapp text-green-500"></i> Pedidos seguros por WhatsApp</span>
+        <span class="flex items-center gap-1.5"><i class="fa-solid fa-tag text-purple-500"></i> Promociones y Kits</span>
+      </div>
+      <p class="mt-4 text-[11px] text-gray-400">© 2026 Vaina Mía • Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <!-- MODAL DE COMPRA / SELECCIÓN DE TALLA Y PROMO -->
+  <div id="modal-pedido" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl max-h-[90vh] overflow-y-auto p-5 shadow-2xl fade-in">
+      
+      <!-- Cabecera del modal -->
+      <div class="flex justify-between items-center pb-3 border-b border-gray-100">
+        <div>
+          <span class="text-xs uppercase tracking-wider font-bold text-pink-600" id="modal-cat">Ropa</span>
+          <h3 class="text-lg font-extrabold text-gray-900 leading-tight" id="modal-titulo">Nombre del Producto</h3>
+        </div>
+        <button onclick="cerrarModalPedido()" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- GALERÍA DE FOTOS INTERACTIVA (CARRUSEL SLIDER) -->
+      <div class="my-3 select-none">
+        <div id="galeria-contenedor" class="relative w-full h-64 sm:h-72 bg-gray-100 rounded-2xl overflow-hidden shadow-inner group">
+          <!-- Imagen activa -->
+          <img id="galeria-img-activa" src="" alt="Foto Producto" class="w-full h-full object-cover transition-opacity duration-300">
+          
+          <!-- Flechas izquierda y derecha -->
+          <div id="galeria-flechas" class="hidden">
+            <button onclick="cambiarFotoGaleria(-1)" class="absolute left-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/75 text-white flex items-center justify-center backdrop-blur-sm transition active:scale-90 shadow-md z-10">
+              <i class="fa-solid fa-chevron-left text-xs"></i>
+            </button>
+            <button onclick="cambiarFotoGaleria(1)" class="absolute right-2.5 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/50 hover:bg-black/75 text-white flex items-center justify-center backdrop-blur-sm transition active:scale-90 shadow-md z-10">
+              <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+          </div>
+
+          <!-- Contador de foto (ej: 1 / 3) -->
+          <span id="galeria-contador" class="absolute top-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow">
+            <i class="fa-solid fa-camera text-[10px]"></i> <span id="galeria-contador-texto">1 / 1</span>
+          </span>
+
+          <!-- Puntos indicadores inferiores -->
+          <div id="galeria-puntos" class="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5 z-10">
+          </div>
+        </div>
+
+        <!-- Tira de Miniaturas -->
+        <div id="galeria-miniaturas" class="flex gap-2 overflow-x-auto pt-2 pb-1 hidden">
+        </div>
+
+        <!-- Resumen de precio y disponibilidad -->
+        <div class="flex justify-between items-center mt-2 px-1">
+          <div>
+            <p class="text-xs text-gray-500 font-medium">Precio por unidad:</p>
+            <p class="text-lg font-black text-gray-900" id="modal-precio-unitario">$0</p>
+          </div>
+          <span class="bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded-full border border-green-200 flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Stock Disponible
+          </span>
+        </div>
+      </div>
+
+      <!-- PASO 1: SELECCIONAR TALLA -->
+      <div class="mt-4">
+        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+          1. Elige tu Talla:
+        </label>
+        <div id="modal-tallas-container" class="flex flex-wrap gap-2">
+          <!-- Tallas inyectadas dinámicamente -->
+        </div>
+      </div>
+
+      <!-- PASO 2: SELECCIONAR PROMOCIÓN / KIT (CALCULO DE AHORRO) -->
+      <div class="mt-5">
+        <div class="flex justify-between items-center mb-2">
+          <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+            2. Elige tu Promoción:
+          </label>
+          <span class="text-[11px] font-semibold text-pink-600 flex items-center gap-1">
+            <i class="fa-solid fa-fire text-orange-500"></i> Mayor ahorro en kits
+          </span>
+        </div>
+
+        <div class="space-y-2.5" id="modal-promos-container">
+          <!-- Opciones de promociones inyectadas -->
+        </div>
+      </div>
+
+      <!-- PASO 3: SELECCIONAR COLORES (1 A 3 SEGÚN LA PROMO) -->
+      <div class="mt-5" id="seccion-colores">
+        <div class="flex justify-between items-center mb-2">
+          <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+            3. Elige los Colores de tus prendas:
+          </label>
+          <span class="text-[11px] font-bold text-pink-600 bg-pink-50 px-2 py-0.5 rounded-full border border-pink-200" id="badge-cantidad-colores">
+            1 color
+          </span>
+        </div>
+        <div id="modal-colores-container" class="space-y-3">
+          <!-- Inyectado dinámicamente según la cantidad de la promo -->
+        </div>
+      </div>
+
+      <!-- RESUMEN DE TOTAL Y AHORRO DESTACADO -->
+      <div class="mt-5 p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-orange-200">
+        <div class="flex justify-between items-baseline">
+          <div>
+            <span class="text-xs text-gray-500 font-medium">Total a pagar:</span>
+            <div class="text-2xl font-black text-gray-900" id="resumen-total">$0</div>
+          </div>
+          <div class="text-right" id="resumen-ahorro-container">
+            <!-- Si hay ahorro, se muestra aquí -->
+          </div>
+        </div>
+      </div>
+
+      <!-- PASO 4: DATOS DE CONTACTO DEL CLIENTE -->
+      <div class="mt-5 space-y-3">
+        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+          4. Tus Datos para el Envío:
+        </label>
+        
+        <div>
+          <input type="text" id="cliente-nombre" placeholder="Nombre completo *" 
+            class="w-full text-sm px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:outline-none">
+        </div>
+        <div>
+          <input type="tel" id="cliente-telefono" placeholder="Número de WhatsApp o Celular *" 
+            class="w-full text-sm px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:outline-none">
+        </div>
+        <div>
+          <input type="text" id="cliente-ciudad" placeholder="Ciudad y Barrio / Dirección de entrega" 
+            class="w-full text-sm px-3.5 py-2.5 bg-gray-50 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:outline-none">
+        </div>
+      </div>
+
+      <!-- BOTÓN DE CONFIRMACIÓN A WHATSAPP -->
+      <button onclick="enviarPedidoWhatsApp()" 
+        class="w-full mt-5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-extrabold py-3.5 px-4 rounded-xl shadow-lg flex items-center justify-center gap-2 text-base transition active:scale-95">
+        <i class="fa-brands fa-whatsapp text-2xl"></i>
+        <span>Confirmar Pedido por WhatsApp</span>
+      </button>
+
+      <p class="text-center text-[11px] text-gray-400 mt-2">
+        Te responderemos de inmediato para coordinar el pago y la entrega.
+      </p>
+
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL DE ADMINISTRADOR: EDITAR PRECIOS & TELÉFONO -->
+  <!-- ========================================== -->
+  <div id="modal-admin" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-2xl max-h-[90vh] overflow-y-auto p-5 shadow-2xl">
+      
+      <div class="flex justify-between items-center pb-3 border-b">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-sliders text-pink-600 text-xl"></i>
+          <div>
+            <h3 class="text-lg font-bold text-gray-900">Panel de Precios y Promociones</h3>
+            <p class="text-xs text-gray-500">Configura tu teléfono de WhatsApp y precios</p>
+          </div>
+        </div>
+        <button onclick="cerrarAdminModal()" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="mt-4 space-y-4">
+        <!-- Número de WhatsApp -->
+        <div class="p-3 bg-green-50 border border-green-200 rounded-xl">
+          <label class="block text-xs font-bold text-green-900 mb-1">
+            <i class="fa-brands fa-whatsapp text-green-600"></i> Tu Número de WhatsApp para recibir pedidos:
+          </label>
+          <div class="flex gap-2">
+            <input type="text" id="admin-telefono-wp" placeholder="Ejemplo: 573001234567"
+              class="flex-1 text-sm p-2.5 border rounded-lg focus:ring-2 focus:ring-green-500 font-mono bg-white">
+            <button onclick="guardarTelefonoAdmin()" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-lg text-xs transition">
+              Guardar Teléfono
+            </button>
+          </div>
+          <p class="text-[11px] text-green-700 mt-1">Incluye el código de país (ej. 57 para Colombia).</p>
+        </div>
+
+        <!-- Seguridad: Cambiar PIN de Acceso -->
+        <div class="p-3 bg-purple-50 border border-purple-200 rounded-xl">
+          <label class="block text-xs font-bold text-purple-900 mb-1">
+            <i class="fa-solid fa-key text-purple-600"></i> Cambiar PIN de Seguridad Administrador:
+          </label>
+          <div class="flex gap-2">
+            <input type="password" id="admin-nuevo-pin" placeholder="Nuevo PIN secreto" maxlength="12"
+              class="flex-1 text-sm p-2.5 border rounded-lg focus:ring-2 focus:ring-purple-500 font-mono bg-white tracking-widest">
+            <button onclick="actualizarPinAdmin()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-4 py-2 rounded-lg text-xs transition">
+              Guardar PIN
+            </button>
+          </div>
+          <p class="text-[11px] text-purple-700 mt-1">
+            🔒 Aloja y cambia tu PIN aquí o directamente en tu <b>Google Sheet (Pestaña 'Configuración', celda B2)</b>.
+          </p>
+        </div>
+
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold text-gray-700">Edición rápida de productos:</span>
+          <button onclick="agregarNuevoProducto()" class="text-xs bg-pink-600 hover:bg-pink-700 text-white font-bold px-3 py-1.5 rounded-lg flex items-center gap-1">
+            <i class="fa-solid fa-plus"></i> Nuevo
+          </button>
+        </div>
+
+        <div id="admin-lista-productos" class="space-y-4 max-h-[48vh] overflow-y-auto pr-1">
+          <!-- Formulario de cada producto generado dinámicamente -->
+        </div>
+
+        <div class="pt-3 border-t flex justify-between items-center gap-2">
+          <button type="button" onclick="recargarDesdeGoogleSheet()" class="px-3 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 flex items-center gap-1.5 transition" title="Recarga los productos editados desde tu Google Sheet">
+            <i class="fa-solid fa-arrows-rotate"></i> Recargar de Hoja
+          </button>
+          <div class="flex gap-2">
+            <button onclick="cerrarAdminModal()" class="px-4 py-2 text-xs font-bold text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">
+              Cerrar
+            </button>
+            <button onclick="guardarCambiosAdmin()" class="px-5 py-2 text-xs font-extrabold text-white bg-green-600 rounded-lg hover:bg-green-700 shadow flex items-center gap-1">
+              <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // URL OFICIAL DE TU SERVICIO GOOGLE APPS SCRIPT
+    var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwlF_5QTyKiBCaQ3pChEPi0J07iouuaMOIl0kXAUQysaEOpFUSX8jBq9ciB-8U-UVZe/exec";
+
+    // ========================================================
+    // 1. CARGA INTELIGENTE HÍBRIDA (GOOGLE APPS SCRIPT + GITHUB)
+    // ========================================================
+    var productos = [];
+    var configInicial = { whatsapp: "573001234567", storeName: "Vaina Mía" };
+
+    // Si corre en Google Apps Script, lee directamente del servidor
+    // Si corre en GitHub Pages, los tags <?!= ?> se manejan como strings sin generar error de sintaxis
+    try {
+      var serverDataRaw = '<?!= productosIniciales ?>';
+      if (serverDataRaw && !serverDataRaw.startsWith("<?")) {
+        productos = JSON.parse(serverDataRaw);
+      }
+    } catch(e) {}
+
+    try {
+      var serverConfigRaw = '<?!= configInicial ?>';
+      if (serverConfigRaw && !serverConfigRaw.startsWith("<?")) {
+        configInicial = JSON.parse(serverConfigRaw);
+      }
+    } catch(e) {}
+
+    // Si está en GitHub o local y tiene productos editados en caché, usarlos de inmediato
+    if (!productos || productos.length === 0) {
+      try {
+        var guardados = localStorage.getItem('catalogo_productos');
+        if (guardados) {
+          productos = JSON.parse(guardados);
+        }
+      } catch(e) {}
+    }
+
+    // Teléfono de WhatsApp
+    var DEFAULT_WHATSAPP = (configInicial && configInicial.whatsapp) ? configInicial.whatsapp : "573001234567";
+    var configTelefono = localStorage.getItem('catalogo_telefono') || DEFAULT_WHATSAPP;
+
+    // ========================================================
+    // COMUNICACIÓN UNIVERSAL CON GOOGLE APPS SCRIPT
+    // (Garantiza funcionamiento tanto en Apps Script como en GitHub Pages sin bloqueos CORS)
+    // ========================================================
+    function ejecutarJsonpAppsScript(action, params, onSuccess, onError) {
+      params = params || {};
+      var callbackName = 'cb_' + action + '_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+      var queryParts = ['action=' + encodeURIComponent(action), 'callback=' + callbackName, 't=' + Date.now()];
+
+      for (var key in params) {
+        if (params.hasOwnProperty(key)) {
+          queryParts.push(encodeURIComponent(key) + '=' + encodeURIComponent(params[key]));
+        }
+      }
+
+      var url = APPS_SCRIPT_URL + (APPS_SCRIPT_URL.indexOf('?') >= 0 ? '&' : '?') + queryParts.join('&');
+      var scriptTag = document.createElement('script');
+
+      var timeoutId = setTimeout(function() {
+        cleanup();
+        if (onError) onError(new Error("Tiempo de espera agotado al conectar con Google Sheets."));
+      }, 15000);
+
+      function cleanup() {
+        if (timeoutId) clearTimeout(timeoutId);
+        try { delete window[callbackName]; } catch(e) {}
+        if (scriptTag && scriptTag.parentNode) scriptTag.parentNode.removeChild(scriptTag);
+      }
+
+      window[callbackName] = function(resp) {
+        cleanup();
+        if (onSuccess) onSuccess(resp);
+      };
+
+      scriptTag.src = url;
+      scriptTag.onerror = function(err) {
+        cleanup();
+        if (onError) onError(err || new Error("Error de conexión con Google Sheets."));
+      };
+
+      document.body.appendChild(scriptTag);
+    }
+
+    function cargarProductosDesdeAppsScript(notificar) {
+      // 1. Si estamos dentro de Google Apps Script:
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function(prods) {
+            if (prods && prods.length > 0) {
+              productos = prods;
+              localStorage.setItem('catalogo_productos', JSON.stringify(productos));
+              renderizarCatalogo();
+              if (notificar) mostrarNotificacion("¡Catálogo sincronizado desde tu Google Sheet!", "exito");
+            }
+          })
+          .withFailureHandler(function(err) {
+            if (notificar) mostrarNotificacion("Error al leer hoja: " + err.message, "error");
+          })
+          .obtenerProductosDeHoja();
+        return;
+      }
+
+      // 2. Si estamos en GitHub Pages o local:
+      ejecutarJsonpAppsScript('getProductos', {}, function(resp) {
+        if (resp && resp.exito && resp.productos && resp.productos.length > 0) {
+          productos = resp.productos;
+          localStorage.setItem('catalogo_productos', JSON.stringify(productos));
+          if (resp.config) {
+            if (resp.config.whatsapp) {
+              configTelefono = resp.config.whatsapp;
+              localStorage.setItem('catalogo_telefono', resp.config.whatsapp);
+            }
+            if (resp.config.nombreTienda) {
+              var storeEl = document.getElementById('store-name');
+              if (storeEl) storeEl.innerText = resp.config.nombreTienda;
+            }
+          }
+          renderizarCatalogo();
+          if (notificar) mostrarNotificacion("¡Catálogo sincronizado en vivo con tu Google Sheet!", "exito");
+        } else if (notificar) {
+          mostrarNotificacion("No se recibieron productos de la hoja.", "info");
+        }
+      }, function(err) {
+        if (notificar) mostrarNotificacion("No se pudo conectar con Google Sheets. Revisa tu conexión.", "error");
+      });
+    }
+
+    function enviarProductosAlServidor(prods, onSuccess, onError) {
+      try {
+        fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain" },
+          body: JSON.stringify({ action: "guardarProductos", productos: prods })
+        }).then(function() {
+          if (onSuccess) onSuccess({ exito: true });
+        }).catch(function(err) {
+          var prodsJson = JSON.stringify(prods);
+          ejecutarJsonpAppsScript('guardarProductos', { data: prodsJson }, onSuccess, onError);
+        });
+      } catch(e) {
+        var prodsJson = JSON.stringify(prods);
+        ejecutarJsonpAppsScript('guardarProductos', { data: prodsJson }, onSuccess, onError);
+      }
+    }
+
+    // ==========================================
+    // SISTEMA ELEGANTE DE TOAST NOTIFICACIONES
+    // (Reemplaza las alertas feas del navegador)
+    // ==========================================
+    var timerToast = null;
+    function mostrarNotificacion(mensaje, tipo, duracion) {
+      tipo = tipo || 'exito';
+      duracion = duracion || 3500;
+
+      var toast = document.getElementById('toast-notificacion');
+      var caja = document.getElementById('toast-caja');
+      var icono = document.getElementById('toast-icono');
+      var texto = document.getElementById('toast-mensaje');
+
+      if (!toast || !caja || !icono || !texto) return;
+
+      texto.innerText = mensaje;
+
+      if (tipo === 'exito') {
+        caja.className = "bg-gray-900/95 text-white px-4 py-3.5 rounded-2xl shadow-2xl backdrop-blur-md flex items-center gap-3 border border-emerald-500 fade-in";
+        icono.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>';
+      } else if (tipo === 'error') {
+        caja.className = "bg-gray-900/95 text-white px-4 py-3.5 rounded-2xl shadow-2xl backdrop-blur-md flex items-center gap-3 border border-red-500 fade-in";
+        icono.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-red-400 text-lg"></i>';
+      } else {
+        caja.className = "bg-gray-900/95 text-white px-4 py-3.5 rounded-2xl shadow-2xl backdrop-blur-md flex items-center gap-3 border border-blue-500 fade-in";
+        icono.innerHTML = '<i class="fa-solid fa-circle-info text-blue-400 text-lg"></i>';
+      }
+
+      toast.classList.remove('hidden');
+
+      if (timerToast) clearTimeout(timerToast);
+      timerToast = setTimeout(function() {
+        toast.classList.add('hidden');
+      }, duracion);
+    }
+
+    // ==========================================
+    // CONTROL DEL PIN DE SEGURIDAD (HOJA DE CÁLCULO)
+    // ==========================================
+    function abrirPinModal() {
+      var modal = document.getElementById('modal-pin');
+      var input = document.getElementById('input-pin-admin');
+      var err = document.getElementById('error-pin');
+      if (err) err.classList.add('hidden');
+      if (input) {
+        input.value = '';
+        input.classList.remove('border-red-500');
+      }
+      modal.classList.remove('hidden');
+      setTimeout(function() {
+        if (input) input.focus();
+      }, 100);
+    }
+
+    function cerrarPinModal() {
+      document.getElementById('modal-pin').classList.add('hidden');
+    }
+
+    function verificarPinAdmin(e) {
+      if (e) e.preventDefault();
+      var input = document.getElementById('input-pin-admin');
+      var pinIngresado = input ? input.value : '';
+
+      if (!pinIngresado) {
+        mostrarNotificacion("Por favor ingresa tu código PIN.", "error");
+        return;
+      }
+
+      // Si estamos en Google Apps Script, verificar contra la hoja "Configuración" en el servidor
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        var btnSubmit = document.querySelector('#modal-pin button[type="submit"]');
+        var textoAnt = btnSubmit ? btnSubmit.innerHTML : 'Ingresar';
+        if (btnSubmit) {
+          btnSubmit.disabled = true;
+          btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando...';
+        }
+
+        google.script.run
+          .withSuccessHandler(function(resp) {
+            if (btnSubmit) {
+              btnSubmit.disabled = false;
+              btnSubmit.innerHTML = textoAnt;
+            }
+            if (resp && resp.valido) {
+              cerrarPinModal();
+              abrirAdminModalDirecto();
+              mostrarNotificacion("Bienvenido al panel de administración", "exito");
+            } else {
+              var err = document.getElementById('error-pin');
+              if (err) err.classList.remove('hidden');
+              if (input) {
+                input.value = '';
+                input.focus();
+                input.classList.add('border-red-500');
+              }
+              mostrarNotificacion("PIN incorrecto. Verifica el valor en tu Google Sheet (celda B2).", "error");
+            }
+          })
+          .withFailureHandler(function(err) {
+            if (btnSubmit) {
+              btnSubmit.disabled = false;
+              btnSubmit.innerHTML = textoAnt;
+            }
+            var pinGuardado = localStorage.getItem('catalogo_pin') || '1234';
+            if (pinIngresado === pinGuardado) {
+              cerrarPinModal();
+              abrirAdminModalDirecto();
+            } else {
+              mostrarNotificacion("Error al verificar PIN: " + err.message, "error");
+            }
+          })
+          .verificarPinServidor(pinIngresado);
+
+      } else {
+        // En GitHub Pages o local: verificar contra Google Apps Script mediante JSONP
+        var btnSubmit = document.querySelector('#modal-pin button[type="submit"]');
+        var textoAnt = btnSubmit ? btnSubmit.innerHTML : 'Ingresar';
+        if (btnSubmit) {
+          btnSubmit.disabled = true;
+          btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando...';
+        }
+
+        ejecutarJsonpAppsScript('verificarPin', { pin: pinIngresado }, function(resp) {
+          if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = textoAnt;
+          }
+          if (resp && resp.valido) {
+            cerrarPinModal();
+            abrirAdminModalDirecto();
+            mostrarNotificacion("Bienvenido al panel de administración", "exito");
+          } else {
+            var err = document.getElementById('error-pin');
+            if (err) err.classList.remove('hidden');
+            if (input) {
+              input.value = '';
+              input.focus();
+              input.classList.add('border-red-500');
+            }
+            mostrarNotificacion("PIN incorrecto. Verifica el valor en tu Google Sheet (celda B2).", "error");
+          }
+        }, function(err) {
+          if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = textoAnt;
+          }
+          var pinGuardado = localStorage.getItem('catalogo_pin') || '1234';
+          if (pinIngresado === pinGuardado) {
+            cerrarPinModal();
+            abrirAdminModalDirecto();
+            mostrarNotificacion("Bienvenido (modo local)", "info");
+          } else {
+            mostrarNotificacion("Error al verificar PIN con Google Sheets. Revisa tu conexión.", "error");
+          }
+        });
+      }
+    }
+
+    function actualizarPinAdmin() {
+      var nuevoPin = document.getElementById('admin-nuevo-pin').value.trim();
+      if (!nuevoPin || nuevoPin.length < 3) {
+        mostrarNotificacion("El nuevo PIN debe tener al menos 3 caracteres.", "error");
+        return;
+      }
+      localStorage.setItem('catalogo_pin', nuevoPin);
+
+      // Si estamos en Google Apps Script, guardar directamente en la celda B2 de la hoja "Configuración"
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function() {
+            document.getElementById('admin-nuevo-pin').value = '';
+            mostrarNotificacion("¡PIN actualizado y guardado en tu Google Sheet (celda B2)!", "exito");
+          })
+          .withFailureHandler(function(err) {
+            mostrarNotificacion("PIN guardado localmente (error en hoja: " + err.message + ")", "error");
+          })
+          .guardarNuevoPinEnHoja(nuevoPin);
+      } else {
+        ejecutarJsonpAppsScript('guardarPin', { pin: nuevoPin }, function(resp) {
+          document.getElementById('admin-nuevo-pin').value = '';
+          mostrarNotificacion("¡PIN actualizado y guardado en tu Google Sheet (celda B2)!", "exito");
+        }, function(err) {
+          document.getElementById('admin-nuevo-pin').value = '';
+          mostrarNotificacion("PIN guardado localmente en este navegador.", "info");
+        });
+      }
+    }
+
+    var categoriaActual = 'todos';
+    var productoSeleccionado = null;
+    var tallaSeleccionada = null;
+    var promoSeleccionada = null;
+
+    var formatoMoneda = new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0
+    });
+
+    // ==========================================
+    // LÓGICA DE LA GALERÍA DE FOTOS (CARRUSEL)
+    // ==========================================
+    var fotosGaleria = [];
+    var indiceFotoActiva = 0;
+    var timerAutoSlide = null;
+
+    function renderizarGaleria(fotos) {
+      fotosGaleria = (fotos && fotos.length > 0) ? fotos : [productoSeleccionado.imagen_url];
+      indiceFotoActiva = 0;
+
+      var flechas = document.getElementById('galeria-flechas');
+      var miniaturas = document.getElementById('galeria-miniaturas');
+      var contador = document.getElementById('galeria-contador');
+
+      if (fotosGaleria.length > 1) {
+        flechas.classList.remove('hidden');
+        miniaturas.classList.remove('hidden');
+        contador.classList.remove('hidden');
+      } else {
+        flechas.classList.add('hidden');
+        miniaturas.classList.add('hidden');
+        contador.classList.add('hidden');
+      }
+
+      actualizarVistaGaleria();
+      iniciarAutoSlide();
+    }
+
+    function actualizarVistaGaleria() {
+      var img = document.getElementById('galeria-img-activa');
+      img.style.opacity = '0.4';
+      setTimeout(function() {
+        img.src = fotosGaleria[indiceFotoActiva];
+        img.style.opacity = '1';
+      }, 70);
+
+      document.getElementById('galeria-contador-texto').innerText = (indiceFotoActiva + 1) + " / " + fotosGaleria.length;
+
+      // Puntos indicadores
+      var puntosCont = document.getElementById('galeria-puntos');
+      puntosCont.innerHTML = '';
+      if (fotosGaleria.length > 1) {
+        fotosGaleria.forEach(function(_, idx) {
+          var dot = document.createElement('button');
+          dot.className = 'w-2 h-2 rounded-full transition-all ' + (idx === indiceFotoActiva ? 'bg-white w-5 shadow' : 'bg-white/50');
+          dot.onclick = function() { irAFoto(idx); };
+          puntosCont.appendChild(dot);
+        });
+      }
+
+      // Miniaturas
+      var miniaturasCont = document.getElementById('galeria-miniaturas');
+      miniaturasCont.innerHTML = '';
+      if (fotosGaleria.length > 1) {
+        fotosGaleria.forEach(function(f, idx) {
+          var thumb = document.createElement('img');
+          thumb.src = f;
+          thumb.className = 'w-12 h-12 object-cover rounded-lg cursor-pointer border-2 transition ' +
+            (idx === indiceFotoActiva ? 'border-pink-600 ring-2 ring-pink-400 scale-105 shadow' : 'border-transparent opacity-60 hover:opacity-100');
+          thumb.onclick = function() { irAFoto(idx); };
+          miniaturasCont.appendChild(thumb);
+        });
+      }
+    }
+
+    function cambiarFotoGaleria(delta) {
+      detenerAutoSlide();
+      indiceFotoActiva = (indiceFotoActiva + delta + fotosGaleria.length) % fotosGaleria.length;
+      actualizarVistaGaleria();
+      iniciarAutoSlide(); // Reinicia el timer para que continúe rotando suavemente
+    }
+
+    function irAFoto(idx) {
+      detenerAutoSlide();
+      indiceFotoActiva = idx;
+      actualizarVistaGaleria();
+      iniciarAutoSlide(); // Reinicia el timer para que continúe rotando suavemente
+    }
+
+    function iniciarAutoSlide() {
+      detenerAutoSlide();
+      if (fotosGaleria.length > 1) {
+        timerAutoSlide = setInterval(function() {
+          indiceFotoActiva = (indiceFotoActiva + 1) % fotosGaleria.length;
+          actualizarVistaGaleria();
+        }, 3500); // Avanza automáticamente cada 3.5 segundos
+      }
+    }
+
+    function detenerAutoSlide() {
+      if (timerAutoSlide) {
+        clearInterval(timerAutoSlide);
+        timerAutoSlide = null;
+      }
+    }
+
+    // Normaliza imágenes de productos para asegurar que todas las fotos se capturen y roten
+    function normalizarImagenesProducto(p) {
+      if (Array.isArray(p.imagenes) && p.imagenes.length > 0) {
+        p.imagen_url = p.imagenes[0];
+        return;
+      }
+      var raw = p.imagenes || p.imagen_url || "";
+      if (typeof raw === 'string' && raw) {
+        var urls = raw.match(/https?:\/\/[^\s,;|"'<>\n\r]+/gi);
+        if (urls && urls.length > 0) {
+          p.imagenes = urls.map(function(u) { return u.trim(); }).filter(Boolean);
+        } else {
+          p.imagenes = raw.split(/[\r\n,;|]+/).map(function(u) { return u.trim(); }).filter(function(u) { return u.length > 5; });
+        }
+      } else {
+        p.imagenes = [];
+      }
+      if (p.imagenes.length === 0) {
+        p.imagenes = ["https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600"];
+      }
+      p.imagen_url = p.imagenes[0];
+    }
+
+    var timersCardHover = {};
+    function previewHoverFoto(containerEl, prodId, accion) {
+      var prod = productos.find(function(p) { return p.id === prodId; });
+      if (!prod || !prod.imagenes || prod.imagenes.length <= 1) return;
+      var img = containerEl.querySelector('img');
+      if (!img) return;
+
+      if (accion === 1) {
+        var hIdx = 1 % prod.imagenes.length;
+        img.src = prod.imagenes[hIdx];
+        if (timersCardHover[prodId]) clearInterval(timersCardHover[prodId]);
+        timersCardHover[prodId] = setInterval(function() {
+          hIdx = (hIdx + 1) % prod.imagenes.length;
+          img.src = prod.imagenes[hIdx];
+        }, 1300);
+      } else {
+        if (timersCardHover[prodId]) {
+          clearInterval(timersCardHover[prodId]);
+          delete timersCardHover[prodId];
+        }
+        img.src = prod.imagenes[0];
+      }
+    }
+
+    function renderizarCatalogo() {
+      var container = document.getElementById('productos-container');
+      container.innerHTML = '';
+
+      if (!productos || productos.length === 0) {
+        container.innerHTML = '<div class="col-span-full text-center py-16 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">' +
+          '<div class="inline-block animate-spin rounded-full h-9 w-9 border-4 border-pink-500 border-t-transparent mb-3"></div>' +
+          '<p class="text-gray-800 font-extrabold text-sm">Cargando colección Vaina Mía...</p>' +
+          '<p class="text-gray-400 text-xs mt-1">Conectando en vivo con Google Sheets...</p>' +
+          '</div>';
+        return;
+      }
+
+      productos.forEach(function(p) {
+        normalizarImagenesProducto(p);
+      });
+
+      var filtrados = categoriaActual === 'todos' 
+        ? productos 
+        : productos.filter(function(p) { return p.categoria.toLowerCase() === categoriaActual.toLowerCase(); });
+
+      if (filtrados.length === 0) {
+        container.innerHTML = '<div class="col-span-full text-center py-12 bg-white rounded-2xl p-6 shadow-sm">' +
+          '<i class="fa-solid fa-box-open text-4xl text-gray-300 mb-2"></i>' +
+          '<p class="text-gray-500 font-medium">No hay productos en esta categoría.</p></div>';
+        return;
+      }
+
+      filtrados.forEach(function(prod) {
+        var maxAhorro = 0;
+        if (prod.promociones && prod.promociones.length > 0) {
+          maxAhorro = Math.max.apply(null, prod.promociones.map(function(p) { return p.ahorro || 0; }));
+        }
+
+        var tieneMultiplesFotos = prod.imagenes && prod.imagenes.length > 1;
+        var cantidadFotos = tieneMultiplesFotos ? prod.imagenes.length : 1;
+
+        var card = document.createElement('div');
+        card.className = "bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition border border-gray-100 flex flex-col";
+        card.innerHTML = 
+          '<div class="relative h-56 bg-gray-100 overflow-hidden cursor-pointer" onclick="abrirModalPedido(\'' + prod.id + '\')" onmouseenter="previewHoverFoto(this, \'' + prod.id + '\', 1)" onmouseleave="previewHoverFoto(this, \'' + prod.id + '\', 0)">' +
+            '<img src="' + prod.imagen_url + '" alt="' + prod.nombre + '" class="w-full h-full object-cover hover:scale-105 transition duration-500">' +
+            '<span class="absolute top-3 left-3 bg-black/70 backdrop-blur-sm text-white text-[11px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">' +
+              prod.categoria +
+            '</span>' +
+            (maxAhorro > 0 ? 
+              '<span class="absolute top-3 right-3 bg-red-600 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-full shadow-lg badge-pulse flex items-center gap-1">' +
+                '<i class="fa-solid fa-tag text-[10px]"></i> Ahorra hasta ' + formatoMoneda.format(maxAhorro) +
+              '</span>' : '') +
+            (tieneMultiplesFotos ? 
+              '<span class="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow">' +
+                '<i class="fa-solid fa-images text-[9px]"></i> ' + cantidadFotos + ' fotos' +
+              '</span>' : '') +
+          '</div>' +
+          '<div class="p-4 flex-1 flex flex-col justify-between">' +
+            '<div>' +
+              '<h3 class="font-bold text-gray-900 text-base leading-snug cursor-pointer hover:text-pink-600 transition" onclick="abrirModalPedido(\'' + prod.id + '\')">' + prod.nombre + '</h3>' +
+              '<p class="text-xs text-gray-500 mt-1 line-clamp-2 leading-relaxed">' + (prod.descripcion || 'Selecciona tu talla y aprovecha las promociones por kits.') + '</p>' +
+              '<div class="mt-3 flex items-center gap-1.5 flex-wrap">' +
+                '<span class="text-[11px] text-gray-400 font-semibold mr-1">Tallas:</span>' +
+                prod.tallas.map(function(t) {
+                  return '<span class="bg-gray-100 text-gray-700 text-[10px] font-bold px-2 py-0.5 rounded-md border border-gray-200">' + t + '</span>';
+                }).join('') +
+              '</div>' +
+            '</div>' +
+            '<div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">' +
+              '<div>' +
+                '<span class="text-[11px] text-gray-400 font-medium block">Desde:</span>' +
+                '<span class="text-lg font-black text-gray-900">' + formatoMoneda.format(prod.precio_base) + '</span>' +
+              '</div>' +
+              '<button onclick="abrirModalPedido(\'' + prod.id + '\')" class="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-md flex items-center gap-1.5 transition active:scale-95">' +
+                '<span>Ver Fotos & Kit</span>' +
+                '<i class="fa-solid fa-arrow-right text-[10px]"></i>' +
+              '</button>' +
+            '</div>' +
+          '</div>';
+        container.appendChild(card);
+      });
+    }
+
+    function filtrarCategoria(cat) {
+      categoriaActual = cat;
+      ['todos', 'Ropa', 'Accesorios'].forEach(function(c) {
+        var btn = document.getElementById('btn-cat-' + c);
+        if (!btn) return;
+        if (c.toLowerCase() === cat.toLowerCase()) {
+          btn.className = "flex-1 py-2 px-4 text-center rounded-xl bg-white shadow-sm font-bold text-gray-900 transition";
+        } else {
+          btn.className = "flex-1 py-2 px-4 text-center rounded-xl text-gray-600 hover:text-gray-900 transition";
+        }
+      });
+      renderizarCatalogo();
+    }
+
+    function abrirModalPedido(prodId) {
+      productoSeleccionado = productos.find(function(p) { return p.id === prodId; });
+      if (!productoSeleccionado) return;
+
+      document.getElementById('modal-titulo').innerText = productoSeleccionado.nombre;
+      document.getElementById('modal-cat').innerText = productoSeleccionado.categoria;
+      document.getElementById('modal-precio-unitario').innerText = formatoMoneda.format(productoSeleccionado.precio_base);
+
+      // Iniciar la galería de fotos interactiva
+      var fotosParaGaleria = productoSeleccionado.imagenes || [productoSeleccionado.imagen_url];
+      renderizarGaleria(fotosParaGaleria);
+
+      var tallasContainer = document.getElementById('modal-tallas-container');
+      tallasContainer.innerHTML = '';
+      tallaSeleccionada = productoSeleccionado.tallas[0] || 'Única';
+
+      productoSeleccionado.tallas.forEach(function(talla, index) {
+        var btn = document.createElement('button');
+        btn.id = 'talla-btn-' + talla;
+        btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold border transition ' +
+          (index === 0 ? 'bg-pink-600 text-white border-pink-600 shadow-sm' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50');
+        btn.innerText = talla;
+        btn.onclick = function() { seleccionarTalla(talla); };
+        tallasContainer.appendChild(btn);
+      });
+
+      var promosContainer = document.getElementById('modal-promos-container');
+      promosContainer.innerHTML = '';
+      promoSeleccionada = productoSeleccionado.promociones[0];
+
+      productoSeleccionado.promociones.forEach(function(promo, index) {
+        var precioUnitarioEquiv = Math.round(promo.precio / promo.cantidad);
+        var cardPromo = document.createElement('div');
+        cardPromo.id = 'promo-card-' + index;
+        cardPromo.onclick = function() { seleccionarPromo(index); };
+        cardPromo.className = 'p-3 rounded-xl border-2 cursor-pointer transition flex items-center justify-between ' +
+          (index === 0 ? 'border-pink-600 bg-pink-50/50 shadow-sm' : 'border-gray-200 bg-white hover:border-gray-300');
+
+        cardPromo.innerHTML = 
+          '<div class="flex items-center gap-3">' +
+            '<div class="w-5 h-5 rounded-full border-2 flex items-center justify-center ' +
+              (index === 0 ? 'border-pink-600 bg-pink-600 text-white' : 'border-gray-300 bg-white') + '" id="radio-promo-' + index + '">' +
+              '<i class="fa-solid fa-check text-[10px] ' + (index === 0 ? '' : 'hidden') + '"></i>' +
+            '</div>' +
+            '<div>' +
+              '<div class="flex items-center gap-1.5">' +
+                '<span class="text-xs font-extrabold text-gray-900">' + promo.nombre + '</span>' +
+                (promo.tag ? '<span class="bg-amber-100 text-amber-800 text-[9px] font-black px-1.5 py-0.5 rounded">' + promo.tag + '</span>' : '') +
+              '</div>' +
+              '<span class="text-[11px] text-gray-500">' +
+                (promo.cantidad > 1 ? 'Cada uno sale a ' + formatoMoneda.format(precioUnitarioEquiv) : 'Precio regular') +
+              '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="text-right">' +
+            '<span class="text-sm font-black text-gray-900 block">' + formatoMoneda.format(promo.precio) + '</span>' +
+            (promo.ahorro > 0 ? 
+              '<span class="text-[10px] font-black text-red-600 bg-red-100 px-2 py-0.5 rounded-full inline-block">¡Ahorras ' + formatoMoneda.format(promo.ahorro) + '!</span>' :
+              '<span class="text-[10px] text-gray-400">Regular</span>') +
+          '</div>';
+        promosContainer.appendChild(cardPromo);
+      });
+
+      // Renderizar colores disponibles (1, 2 o 3 según la promo seleccionada)
+      renderizarSelectoresColores(promoSeleccionada.cantidad);
+
+      actualizarResumenTotales();
+      document.getElementById('modal-pedido').classList.remove('hidden');
+    }
+
+    // ========================================================
+    // SELECCIÓN DINÁMICA DE COLORES SEGÚN EL KIT (1 A 3)
+    // ========================================================
+    var coloresSeleccionados = [];
+
+    function renderizarSelectoresColores(cantidad) {
+      var cont = document.getElementById('modal-colores-container');
+      cont.innerHTML = '';
+
+      var coloresDisponibles = (productoSeleccionado && productoSeleccionado.colores && productoSeleccionado.colores.length > 0)
+        ? productoSeleccionado.colores
+        : ["Negro", "Blanco", "Beige"];
+
+      var nuevosColores = [];
+      for (var i = 0; i < cantidad; i++) {
+        if (coloresSeleccionados[i] && coloresDisponibles.indexOf(coloresSeleccionados[i]) !== -1) {
+          nuevosColores.push(coloresSeleccionados[i]);
+        } else {
+          nuevosColores.push(coloresDisponibles[i % coloresDisponibles.length]);
+        }
+      }
+      coloresSeleccionados = nuevosColores;
+
+      var badge = document.getElementById('badge-cantidad-colores');
+      badge.innerText = cantidad === 1 ? '1 color' : (cantidad + ' colores a elegir');
+
+      for (var i = 0; i < cantidad; i++) {
+        (function(prendaIndex) {
+          var fila = document.createElement('div');
+          fila.className = "p-2.5 bg-gray-50 rounded-xl border border-gray-200";
+
+          var tituloPrenda = cantidad > 1 
+            ? '<div class="text-[11px] font-black text-gray-700 uppercase tracking-wide mb-1.5 flex items-center justify-between">' +
+                '<span>Prenda #' + (prendaIndex + 1) + ':</span>' +
+                '<span class="text-pink-600 font-bold" id="label-color-' + prendaIndex + '">' + coloresSeleccionados[prendaIndex] + '</span>' +
+              '</div>'
+            : '<div class="text-[11px] font-black text-gray-700 uppercase tracking-wide mb-1.5 flex items-center justify-between">' +
+                '<span>Color:</span>' +
+                '<span class="text-pink-600 font-bold" id="label-color-' + prendaIndex + '">' + coloresSeleccionados[prendaIndex] + '</span>' +
+              '</div>';
+
+          var botonesColores = '<div class="flex flex-wrap gap-1.5">';
+          coloresDisponibles.forEach(function(c) {
+            var esActivo = coloresSeleccionados[prendaIndex] === c;
+            botonesColores += '<button type="button" onclick="seleccionarColorPrenda(' + prendaIndex + ', \'' + c + '\')" ' +
+              'id="btn-color-' + prendaIndex + '-' + c.replace(/\s+/g, '_') + '" ' +
+              'class="px-3 py-1 rounded-lg text-xs font-bold border transition ' +
+              (esActivo ? 'bg-pink-600 text-white border-pink-600 shadow-sm' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100') + '">' +
+              c +
+            '</button>';
+          });
+          botonesColores += '</div>';
+
+          fila.innerHTML = tituloPrenda + botonesColores;
+          cont.appendChild(fila);
+        })(i);
+      }
+    }
+
+    function seleccionarColorPrenda(prendaIndex, color) {
+      coloresSeleccionados[prendaIndex] = color;
+      var coloresDisponibles = (productoSeleccionado && productoSeleccionado.colores && productoSeleccionado.colores.length > 0)
+        ? productoSeleccionado.colores
+        : ["Negro", "Blanco", "Beige"];
+
+      var label = document.getElementById('label-color-' + prendaIndex);
+      if (label) label.innerText = color;
+
+      coloresDisponibles.forEach(function(c) {
+        var btn = document.getElementById('btn-color-' + prendaIndex + '-' + c.replace(/\s+/g, '_'));
+        if (!btn) return;
+        if (c === color) {
+          btn.className = 'px-3 py-1 rounded-lg text-xs font-bold border transition bg-pink-600 text-white border-pink-600 shadow-sm';
+        } else {
+          btn.className = 'px-3 py-1 rounded-lg text-xs font-bold border transition bg-white text-gray-700 border-gray-300 hover:bg-gray-100';
+        }
+      });
+    }
+
+    function seleccionarTalla(talla) {
+      tallaSeleccionada = talla;
+      productoSeleccionado.tallas.forEach(function(t) {
+        var btn = document.getElementById('talla-btn-' + t);
+        if (!btn) return;
+        if (t === talla) {
+          btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold border transition bg-pink-600 text-white border-pink-600 shadow-sm';
+        } else {
+          btn.className = 'px-3.5 py-1.5 rounded-lg text-xs font-bold border transition bg-white text-gray-700 border-gray-300 hover:bg-gray-50';
+        }
+      });
+    }
+
+    function seleccionarPromo(index) {
+      promoSeleccionada = productoSeleccionado.promociones[index];
+      productoSeleccionado.promociones.forEach(function(_, i) {
+        var card = document.getElementById('promo-card-' + i);
+        var radio = document.getElementById('radio-promo-' + i);
+        if (i === index) {
+          card.className = 'p-3 rounded-xl border-2 cursor-pointer transition flex items-center justify-between border-pink-600 bg-pink-50/50 shadow-sm';
+          radio.className = 'w-5 h-5 rounded-full border-2 flex items-center justify-center border-pink-600 bg-pink-600 text-white';
+          radio.querySelector('i').classList.remove('hidden');
+        } else {
+          card.className = 'p-3 rounded-xl border-2 cursor-pointer transition flex items-center justify-between border-gray-200 bg-white hover:border-gray-300';
+          radio.className = 'w-5 h-5 rounded-full border-2 flex items-center justify-center border-gray-300 bg-white';
+          radio.querySelector('i').classList.add('hidden');
+        }
+      });
+
+      // Actualizar automáticamente los selectores de colores según la cantidad del kit
+      renderizarSelectoresColores(promoSeleccionada.cantidad);
+      actualizarResumenTotales();
+    }
+
+    function actualizarResumenTotales() {
+      if (!promoSeleccionada) return;
+      document.getElementById('resumen-total').innerText = formatoMoneda.format(promoSeleccionada.precio);
+
+      var ahorroContainer = document.getElementById('resumen-ahorro-container');
+      if (promoSeleccionada.ahorro > 0) {
+        ahorroContainer.innerHTML = 
+          '<span class="text-[10px] uppercase font-bold text-red-600 block">Tu Ahorro Total:</span>' +
+          '<span class="text-base font-black text-red-600">' + formatoMoneda.format(promoSeleccionada.ahorro) + '</span>';
+      } else {
+        ahorroContainer.innerHTML = 
+          '<span class="text-[10px] text-gray-400 block">Sin descuento aplicado</span>' +
+          '<span class="text-xs font-semibold text-gray-500">1 unidad</span>';
+      }
+    }
+
+    function cerrarModalPedido() {
+      detenerAutoSlide();
+      document.getElementById('modal-pedido').classList.add('hidden');
+    }
+
+    function enviarPedidoWhatsApp() {
+      var nombre = document.getElementById('cliente-nombre').value.trim();
+      var telefono = document.getElementById('cliente-telefono').value.trim();
+      var ciudad = document.getElementById('cliente-ciudad').value.trim();
+
+      if (!nombre) {
+        mostrarNotificacion("Por favor escribe tu nombre completo para el pedido.", "error");
+        document.getElementById('cliente-nombre').focus();
+        return;
+      }
+      if (!telefono) {
+        mostrarNotificacion("Por favor escribe tu número de WhatsApp de contacto.", "error");
+        document.getElementById('cliente-telefono').focus();
+        return;
+      }
+
+      var texto = "🛍️ *¡HOLA VAINA MÍA! QUIERO CONFIRMAR MI PEDIDO* 🛍️\n\n" +
+        "📌 *Producto:* " + productoSeleccionado.nombre + "\n" +
+        "🏷️ *Categoría:* " + productoSeleccionado.categoria + "\n" +
+        "📏 *Talla elegida:* " + tallaSeleccionada + "\n" +
+        "🎁 *Promoción / Kit:* " + promoSeleccionada.nombre + "\n";
+
+      // Incluir detalle de colores elegidos
+      if (coloresSeleccionados.length === 1) {
+        texto += "🎨 *Color elegido:* " + coloresSeleccionados[0] + "\n";
+      } else if (coloresSeleccionados.length > 1) {
+        texto += "🎨 *Colores del Kit:*\n";
+        coloresSeleccionados.forEach(function(col, idx) {
+          texto += "   • Prenda #" + (idx + 1) + ": " + col + "\n";
+        });
+      }
+
+      texto += "💰 *Total a pagar:* " + formatoMoneda.format(promoSeleccionada.precio) + "\n";
+      
+      if (promoSeleccionada.ahorro > 0) {
+        texto += "🔥 *Ahorro obtenido:* " + formatoMoneda.format(promoSeleccionada.ahorro) + "\n";
+      }
+
+      texto += "\n👤 *DATOS DEL CLIENTE:* \n" +
+        "• *Nombre:* " + nombre + "\n" +
+        "• *Teléfono / WhatsApp:* " + telefono + "\n";
+      if (ciudad) {
+        texto += "• *Ciudad / Dirección:* " + ciudad + "\n";
+      }
+
+      texto += "\n_¿Me confirman la disponibilidad para coordinar el pago y envío? ¡Muchas gracias!_";
+
+      var urlWhatsApp = "https://api.whatsapp.com/send?phone=" + configTelefono + "&text=" + encodeURIComponent(texto);
+      window.open(urlWhatsApp, '_blank');
+    }
+
+    // ==========================================
+    // FUNCIONES DEL ADMINISTRADOR
+    // ==========================================
+    function abrirAdminModal() {
+      abrirPinModal();
+    }
+
+    function abrirAdminModalDirecto() {
+      document.getElementById('admin-telefono-wp').value = configTelefono;
+      renderizarAdminProductos();
+      document.getElementById('modal-admin').classList.remove('hidden');
+    }
+
+    function cerrarAdminModal() {
+      document.getElementById('modal-admin').classList.add('hidden');
+    }
+
+    function guardarTelefonoAdmin() {
+      var tel = document.getElementById('admin-telefono-wp').value.trim();
+      if (tel) {
+        configTelefono = tel;
+        localStorage.setItem('catalogo_telefono', tel);
+
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler(function() {
+              mostrarNotificacion("Teléfono guardado en Google Sheet (celda B3): " + tel, "exito");
+            })
+            .guardarTelefonoEnHoja(tel);
+        } else {
+          ejecutarJsonpAppsScript('guardarTelefono', { telefono: tel }, function(resp) {
+            mostrarNotificacion("Teléfono guardado en Google Sheet (celda B3): " + tel, "exito");
+          }, function(err) {
+            mostrarNotificacion("Teléfono guardado en navegador: " + tel, "exito");
+          });
+        }
+      } else {
+        mostrarNotificacion("Por favor escribe un número válido con código de país.", "error");
+      }
+    }
+
+    function renderizarAdminProductos() {
+      var lista = document.getElementById('admin-lista-productos');
+      lista.innerHTML = '';
+
+      productos.forEach(function(p, idx) {
+        var item = document.createElement('div');
+        item.className = "p-3 border rounded-xl bg-gray-50 space-y-2 text-xs";
+        item.innerHTML = 
+          '<div class="flex justify-between items-center">' +
+            '<span class="font-extrabold text-pink-700">Producto #' + (idx + 1) + ' (' + p.categoria + ')</span>' +
+            '<button onclick="eliminarProductoAdmin(' + idx + ')" class="text-red-500 hover:text-red-700 font-bold">' +
+              '<i class="fa-solid fa-trash"></i> Eliminar' +
+            '</button>' +
+          '</div>' +
+          '<div class="grid grid-cols-2 gap-2">' +
+            '<div>' +
+              '<label class="block font-semibold text-gray-600">Nombre:</label>' +
+              '<input type="text" id="admin-nombre-' + idx + '" value="' + p.nombre + '" class="w-full p-1.5 border rounded bg-white">' +
+            '</div>' +
+            '<div>' +
+              '<label class="block font-semibold text-gray-600">Categoría:</label>' +
+              '<select id="admin-cat-' + idx + '" class="w-full p-1.5 border rounded bg-white">' +
+                '<option value="Ropa" ' + (p.categoria === 'Ropa' ? 'selected' : '') + '>Ropa</option>' +
+                '<option value="Accesorios" ' + (p.categoria === 'Accesorios' ? 'selected' : '') + '>Accesorios</option>' +
+              '</select>' +
+            '</div>' +
+          '</div>' +
+          '<div class="grid grid-cols-3 gap-2">' +
+            '<div>' +
+              '<label class="block font-semibold text-gray-600">Precio 1 Ud ($):</label>' +
+              '<input type="number" id="admin-precio-' + idx + '" value="' + p.precio_base + '" class="w-full p-1.5 border rounded bg-white font-bold text-gray-800">' +
+            '</div>' +
+            '<div>' +
+              '<label class="block font-semibold text-gray-600">Kit Dúo ($):</label>' +
+              '<input type="number" id="admin-duo-' + idx + '" value="' + (p.promociones[1] ? p.promociones[1].precio : p.precio_base * 2) + '" class="w-full p-1.5 border rounded bg-white font-bold text-pink-600">' +
+            '</div>' +
+            '<div>' +
+              '<label class="block font-semibold text-gray-600">Kit Trío ($):</label>' +
+              '<input type="number" id="admin-trio-' + idx + '" value="' + (p.promociones[2] ? p.promociones[2].precio : p.precio_base * 3) + '" class="w-full p-1.5 border rounded bg-white font-bold text-purple-600">' +
+            '</div>' +
+          '</div>' +
+          '<div class="grid grid-cols-2 gap-2">' +
+            '<div>' +
+              '<label class="block font-semibold text-gray-600">Tallas (ej: S, M, L):</label>' +
+              '<input type="text" id="admin-tallas-' + idx + '" value="' + p.tallas.join(', ') + '" class="w-full p-1.5 border rounded bg-white">' +
+            '</div>' +
+            '<div>' +
+              '<label class="block font-semibold text-gray-600">Colores (ej: Negro, Blanco):</label>' +
+              '<input type="text" id="admin-colores-' + idx + '" value="' + (p.colores ? p.colores.join(', ') : 'Negro, Blanco, Beige') + '" class="w-full p-1.5 border rounded bg-white">' +
+            '</div>' +
+          '</div>' +
+          '<div>' +
+            '<label class="block font-semibold text-gray-600">URLs de Fotos (separadas por coma):</label>' +
+            '<input type="text" id="admin-img-' + idx + '" value="' + (p.imagenes ? p.imagenes.join(', ') : p.imagen_url) + '" class="w-full p-1.5 border rounded bg-white">' +
+          '</div>';
+        lista.appendChild(item);
+      });
+    }
+
+    function agregarNuevoProducto() {
+      productos.push({
+        id: "prod-" + Date.now(),
+        nombre: "Nuevo Producto",
+        categoria: "Ropa",
+        precio_base: 50000,
+        tallas: ["S", "M", "L"],
+        colores: ["Negro", "Blanco", "Beige"],
+        imagenes: ["https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600"],
+        imagen_url: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600",
+        descripcion: "Descripción del nuevo producto.",
+        promociones: [
+          { nombre: "1 Unidad", cantidad: 1, precio: 50000, ahorro: 0, tag: "" },
+          { nombre: "Kit Dúo (2 Uds)", cantidad: 2, precio: 85000, ahorro: 15000, tag: "🔥 Promo Dúo" },
+          { nombre: "Kit Trío (3 Uds)", cantidad: 3, precio: 120000, ahorro: 30000, tag: "👑 Máximo Ahorro" }
+        ]
+      });
+      renderizarAdminProductos();
+    }
+
+    function eliminarProductoAdmin(idx) {
+      if (confirm("¿Seguro que deseas eliminar este producto?")) {
+        productos.splice(idx, 1);
+        renderizarAdminProductos();
+      }
+    }
+
+    function guardarCambiosAdmin() {
+      productos.forEach(function(p, idx) {
+        p.nombre = document.getElementById('admin-nombre-' + idx).value;
+        p.categoria = document.getElementById('admin-cat-' + idx).value;
+        p.precio_base = parseFloat(document.getElementById('admin-precio-' + idx).value) || 0;
+        
+        var duoPrecio = parseFloat(document.getElementById('admin-duo-' + idx).value) || (p.precio_base * 2);
+        var trioPrecio = parseFloat(document.getElementById('admin-trio-' + idx).value) || (p.precio_base * 3);
+        
+        var ahorroDuo = Math.max(0, (p.precio_base * 2) - duoPrecio);
+        var ahorroTrio = Math.max(0, (p.precio_base * 3) - trioPrecio);
+
+        p.promociones = [
+          { nombre: "1 Unidad", cantidad: 1, precio: p.precio_base, ahorro: 0, tag: "" },
+          { nombre: "Kit Dúo (2 Uds)", cantidad: 2, precio: duoPrecio, ahorro: ahorroDuo, tag: "🔥 Promo Dúo" },
+          { nombre: "Kit Trío (3 Uds)", cantidad: 3, precio: trioPrecio, ahorro: ahorroTrio, tag: "👑 Máximo Ahorro" }
+        ];
+
+        var tallasStr = document.getElementById('admin-tallas-' + idx).value;
+        p.tallas = tallasStr.split(',').map(function(t) { return t.trim(); }).filter(Boolean);
+
+        var coloresStr = document.getElementById('admin-colores-' + idx).value;
+        p.colores = coloresStr.split(',').map(function(c) { return c.trim(); }).filter(Boolean);
+
+        var imgsStr = document.getElementById('admin-img-' + idx).value;
+        p.imagenes = imgsStr.split(',').map(function(u) { return u.trim(); }).filter(Boolean);
+        p.imagen_url = p.imagenes[0] || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600';
+      });
+
+      localStorage.setItem('catalogo_productos', JSON.stringify(productos));
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(function() {
+            mostrarNotificacion("¡Precios y productos guardados en tu Google Sheet con éxito!", "exito");
+          })
+          .withFailureHandler(function(err) {
+            mostrarNotificacion("Precios guardados en navegador (error en hoja: " + err.message + ")", "error");
+          })
+          .guardarProductosEnHoja(productos);
+      } else {
+        enviarProductosAlServidor(productos, function() {
+          mostrarNotificacion("¡Precios y productos guardados en tu Google Sheet!", "exito");
+        }, function() {
+          mostrarNotificacion("¡Precios actualizados en este dispositivo!", "exito");
+        });
+      }
+
+      cerrarAdminModal();
+      renderizarCatalogo();
+    }
+
+    function recargarDesdeGoogleSheet() {
+      mostrarNotificacion("Consultando tu Google Sheet...", "info", 2000);
+      cargarProductosDesdeAppsScript(true);
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      renderizarCatalogo();
+
+      // En GitHub Pages o local: sincronizar productos editados desde Google Sheets en vivo
+      if (typeof google === 'undefined' || !google.script || !google.script.run || !productos || productos.length === 0) {
+        cargarProductosDesdeAppsScript(false);
+      }
+
+      // Deslizar con el dedo en teléfonos táctiles (swipe izquierda/derecha)
+      var galCont = document.getElementById('galeria-contenedor');
+      var touchStartX = 0;
+      if (galCont) {
+        galCont.addEventListener('touchstart', function(e) {
+          touchStartX = e.touches[0].clientX;
+        }, {passive: true});
+
+        galCont.addEventListener('touchend', function(e) {
+          var touchEndX = e.changedTouches[0].clientX;
+          if (touchStartX - touchEndX > 45) {
+            cambiarFotoGaleria(1); // Siguiente
+          } else if (touchEndX - touchStartX > 45) {
+            cambiarFotoGaleria(-1); // Anterior
+          }
+        }, {passive: true});
+      }
+    });
+  </script>
+</body>
+</html>
