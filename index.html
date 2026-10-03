@@ -69,8 +69,8 @@
   <header class="bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 text-white shadow-lg sticky top-0 z-30">
     <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <!-- Logo / Emblema Vaina Mía -->
-        <div class="relative shrink-0">
+        <!-- Logo / Emblema Vaina Mía (Toque secreto para admin) -->
+        <div class="relative shrink-0 cursor-pointer select-none" onclick="secretoClicLogo()" title="Vaina Mía">
           <img src="https://i.imgur.com/XDz195U.jpeg" alt="Vaina Mía" 
             class="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-md">
           <span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-400 border-2 border-white rounded-full"></span>
@@ -84,8 +84,8 @@
         </div>
       </div>
 
-      <!-- Botón de Administrador con Rueda Dentada -->
-      <button onclick="abrirPinModal()" class="bg-white/20 hover:bg-white/30 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 backdrop-blur-sm transition shadow-sm border border-white/20" title="Panel de Administración">
+      <!-- Botón de Administrador (Oculto por defecto para clientes; se activa desde la URL con ?admin) -->
+      <button id="btn-admin-header" onclick="abrirPinModal()" class="hidden bg-white/20 hover:bg-white/30 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 backdrop-blur-sm transition shadow-sm border border-white/20" title="Panel de Administración">
         <i class="fa-solid fa-gear text-sm"></i>
         <span>Admin</span>
       </button>
@@ -351,10 +351,15 @@
           <!-- Formulario de cada producto generado dinámicamente -->
         </div>
 
-        <div class="pt-3 border-t flex justify-between items-center gap-2">
-          <button type="button" onclick="recargarDesdeGoogleSheet()" class="px-3 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 flex items-center gap-1.5 transition" title="Recarga los productos editados desde tu Google Sheet">
-            <i class="fa-solid fa-arrows-rotate"></i> Recargar de Hoja
-          </button>
+        <div class="pt-3 border-t flex flex-wrap justify-between items-center gap-2">
+          <div class="flex items-center gap-1.5">
+            <button type="button" onclick="recargarDesdeGoogleSheet()" class="px-3 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg border border-indigo-200 flex items-center gap-1.5 transition" title="Recarga los productos editados desde tu Google Sheet">
+              <i class="fa-solid fa-arrows-rotate"></i> Recargar de Hoja
+            </button>
+            <button type="button" onclick="salirModoAdmin()" class="px-3 py-2 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg border border-red-200 flex items-center gap-1.5 transition" title="Ocultar modo administrador y limpiar URL">
+              <i class="fa-solid fa-eye-slash"></i> Ocultar Admin
+            </button>
+          </div>
           <div class="flex gap-2">
             <button onclick="cerrarAdminModal()" class="px-4 py-2 text-xs font-bold text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200">
               Cerrar
@@ -379,31 +384,13 @@
     var productos = [];
     var configInicial = { whatsapp: "573001234567", storeName: "Vaina Mía" };
 
-    // Si corre en Google Apps Script, lee directamente del servidor
-    // Si corre en GitHub Pages, los tags <?!= ?> se manejan como strings sin generar error de sintaxis
+    // Carga de caché local para inicio instantáneo sin pantalla en blanco
     try {
-      var serverDataRaw = '<?!= productosIniciales ?>';
-      if (serverDataRaw && !serverDataRaw.startsWith("<?")) {
-        productos = JSON.parse(serverDataRaw);
+      var guardados = localStorage.getItem('catalogo_productos');
+      if (guardados) {
+        productos = JSON.parse(guardados);
       }
     } catch(e) {}
-
-    try {
-      var serverConfigRaw = '<?!= configInicial ?>';
-      if (serverConfigRaw && !serverConfigRaw.startsWith("<?")) {
-        configInicial = JSON.parse(serverConfigRaw);
-      }
-    } catch(e) {}
-
-    // Si está en GitHub o local y tiene productos editados en caché, usarlos de inmediato
-    if (!productos || productos.length === 0) {
-      try {
-        var guardados = localStorage.getItem('catalogo_productos');
-        if (guardados) {
-          productos = JSON.parse(guardados);
-        }
-      } catch(e) {}
-    }
 
     // Teléfono de WhatsApp
     var DEFAULT_WHATSAPP = (configInicial && configInicial.whatsapp) ? configInicial.whatsapp : "573001234567";
@@ -430,7 +417,7 @@
       var timeoutId = setTimeout(function() {
         cleanup();
         if (onError) onError(new Error("Tiempo de espera agotado al conectar con Google Sheets."));
-      }, 15000);
+      }, 7000);
 
       function cleanup() {
         if (timeoutId) clearTimeout(timeoutId);
@@ -453,6 +440,8 @@
     }
 
     function cargarProductosDesdeAppsScript(notificar) {
+      var container = document.getElementById('productos-container');
+
       // 1. Si estamos dentro de Google Apps Script:
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         google.script.run
@@ -471,9 +460,17 @@
         return;
       }
 
-      // 2. Si estamos en GitHub Pages o local:
-      ejecutarJsonpAppsScript('getProductos', {}, function(resp) {
-        if (resp && resp.exito && resp.productos && resp.productos.length > 0) {
+      // Si no hay productos aún, mostrar el spinner
+      if ((!productos || productos.length === 0) && container) {
+        container.innerHTML = '<div class="col-span-full text-center py-16 bg-white rounded-2xl p-6 shadow-sm border border-gray-100 max-w-md mx-auto">' +
+          '<div class="inline-block animate-spin rounded-full h-9 w-9 border-4 border-pink-500 border-t-transparent mb-3"></div>' +
+          '<p class="text-gray-800 font-extrabold text-sm">Cargando colección Vaina Mía...</p>' +
+          '<p class="text-gray-400 text-xs mt-1">Conectando en vivo con Google Sheets...</p>' +
+          '</div>';
+      }
+
+      function aplicarDatosRespuesta(resp) {
+        if (resp && (resp.exito || resp.productos) && resp.productos && resp.productos.length > 0) {
           productos = resp.productos;
           localStorage.setItem('catalogo_productos', JSON.stringify(productos));
           if (resp.config) {
@@ -488,11 +485,69 @@
           }
           renderizarCatalogo();
           if (notificar) mostrarNotificacion("¡Catálogo sincronizado en vivo con tu Google Sheet!", "exito");
-        } else if (notificar) {
-          mostrarNotificacion("No se recibieron productos de la hoja.", "info");
+          return true;
+        }
+        return false;
+      }
+
+      function mostrarMensajeErrorVersion() {
+        if (productos && productos.length > 0) {
+          renderizarCatalogo();
+          return;
+        }
+        if (!container) return;
+        container.innerHTML = 
+          '<div class="col-span-full text-center py-10 px-6 bg-white rounded-3xl shadow-lg border border-pink-100 max-w-lg mx-auto fade-in my-6">' +
+            '<div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-pink-500 to-purple-600 text-white flex items-center justify-center mx-auto mb-4 shadow-md shadow-pink-200">' +
+              '<i class="fa-solid fa-cloud-arrow-up text-2xl"></i>' +
+            '</div>' +
+            '<h3 class="text-lg font-black text-gray-900 mb-1.5">Falta publicar la "Nueva Versión" en Apps Script</h3>' +
+            '<p class="text-xs text-gray-500 mb-5 leading-relaxed">' +
+              'Tu catálogo en GitHub Pages está listo, pero tu enlace de Google Apps Script aún tiene activa la versión anterior sin la API de lectura externa.' +
+            '</p>' +
+            '<div class="text-left bg-gray-50 p-4 rounded-2xl text-xs space-y-2.5 border border-gray-200/80 mb-5">' +
+              '<p class="font-extrabold text-pink-700 uppercase tracking-wide text-[11px] flex items-center gap-1.5">' +
+                '<i class="fa-solid fa-circle-check text-pink-600"></i> Solo sigue estos 3 pasos en tu Google Sheet:' +
+              '</p>' +
+              '<div class="flex items-start gap-2 text-gray-700">' +
+                '<span class="w-5 h-5 rounded-full bg-pink-100 text-pink-700 font-bold flex items-center justify-center shrink-0 text-[10px]">1</span>' +
+                '<span>Ve a <b>Extensiones ➔ Apps Script</b> y pega el código actualizado de <code>Codigo.gs</code>. Guarda (💾).</span>' +
+              '</div>' +
+              '<div class="flex items-start gap-2 text-gray-700">' +
+                '<span class="w-5 h-5 rounded-full bg-pink-100 text-pink-700 font-bold flex items-center justify-center shrink-0 text-[10px]">2</span>' +
+                '<span>Arriba a la derecha, haz clic en: <b>Implementar ➔ Administrar implementaciones</b>.</span>' +
+              '</div>' +
+              '<div class="flex items-start gap-2 text-gray-700">' +
+                '<span class="w-5 h-5 rounded-full bg-pink-100 text-pink-700 font-bold flex items-center justify-center shrink-0 text-[10px]">3</span>' +
+                '<span>Haz clic en el <b>Lápiz ✏️ (Editar)</b> ➔ En Versión selecciona <b>"Nueva versión"</b> ➔ Clic en <b>Implementar</b>.</span>' +
+              '</div>' +
+            '</div>' +
+            '<button onclick="cargarProductosDesdeAppsScript(true)" class="w-full py-3 px-4 bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white font-extrabold text-xs rounded-xl shadow-md transition active:scale-95 flex items-center justify-center gap-2">' +
+              '<i class="fa-solid fa-arrows-rotate"></i> Ya lo actualicé, Reintentar Conexión' +
+            '</button>' +
+          '</div>';
+      }
+
+      // 2. Intentar JSONP primero (rápido y sin CORS)
+      var jsonpExitoso = false;
+      ejecutarJsonpAppsScript('getProductos', {}, function(resp) {
+        jsonpExitoso = true;
+        if (!aplicarDatosRespuesta(resp)) {
+          mostrarMensajeErrorVersion();
         }
       }, function(err) {
-        if (notificar) mostrarNotificacion("No se pudo conectar con Google Sheets. Revisa tu conexión.", "error");
+        if (jsonpExitoso) return;
+        // Si JSONP falla, intentar con fetch directo
+        fetch(APPS_SCRIPT_URL + (APPS_SCRIPT_URL.indexOf('?') >= 0 ? '&' : '?') + 'action=getProductos&t=' + Date.now())
+          .then(function(res) { return res.json(); })
+          .then(function(data) {
+            if (!aplicarDatosRespuesta(data)) {
+              mostrarMensajeErrorVersion();
+            }
+          })
+          .catch(function(fetchErr) {
+            mostrarMensajeErrorVersion();
+          });
       });
     }
 
@@ -1392,7 +1447,73 @@
       cargarProductosDesdeAppsScript(true);
     }
 
+    // ========================================================
+    // MODO ADMINISTRADOR OCULTO POR SEGURIDAD
+    // (Solo se activa desde la URL con ?admin o #admin, o tocando el logo 5 veces)
+    // ========================================================
+    var contadorClicsLogo = 0;
+    var timerClicsLogo = null;
+    function secretoClicLogo() {
+      contadorClicsLogo++;
+      if (timerClicsLogo) clearTimeout(timerClicsLogo);
+      timerClicsLogo = setTimeout(function() {
+        contadorClicsLogo = 0;
+      }, 2500);
+
+      if (contadorClicsLogo >= 5) {
+        contadorClicsLogo = 0;
+        sessionStorage.setItem('vaina_modo_admin', '1');
+        var btnAdmin = document.getElementById('btn-admin-header');
+        if (btnAdmin) btnAdmin.classList.remove('hidden');
+        abrirPinModal();
+        mostrarNotificacion("Modo administrador desbloqueado", "exito");
+      }
+    }
+
+    function verificarModoAdminUrl() {
+      var urlParams = new URLSearchParams(window.location.search);
+      var hash = window.location.hash.toLowerCase();
+      var esAdmin = urlParams.has('admin') || 
+                    urlParams.get('modo') === 'admin' || 
+                    hash === '#admin' || 
+                    sessionStorage.getItem('vaina_modo_admin') === '1';
+
+      var btnAdmin = document.getElementById('btn-admin-header');
+
+      if (esAdmin) {
+        sessionStorage.setItem('vaina_modo_admin', '1');
+        if (btnAdmin) btnAdmin.classList.remove('hidden');
+
+        // Si la URL contiene explícitamente ?admin o #admin, abrir de inmediato el modal de PIN
+        if (urlParams.has('admin') || urlParams.get('modo') === 'admin' || hash === '#admin') {
+          setTimeout(function() {
+            abrirPinModal();
+          }, 350);
+        }
+      } else {
+        if (btnAdmin) btnAdmin.classList.add('hidden');
+      }
+    }
+
+    function salirModoAdmin() {
+      sessionStorage.removeItem('vaina_modo_admin');
+      var btnAdmin = document.getElementById('btn-admin-header');
+      if (btnAdmin) btnAdmin.classList.add('hidden');
+      cerrarAdminModal();
+      cerrarPinModal();
+
+      // Limpiar el parámetro de la barra de direcciones sin recargar la página
+      if (window.history.replaceState) {
+        var cleanUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+      mostrarNotificacion("Modo administrador cerrado y oculto con éxito.", "info");
+    }
+
     window.addEventListener('DOMContentLoaded', function() {
+      // 1. Verificar si la URL activa el modo administrador (?admin o #admin)
+      verificarModoAdminUrl();
+
       renderizarCatalogo();
 
       // En GitHub Pages o local: sincronizar productos editados desde Google Sheets en vivo
